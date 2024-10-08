@@ -1,0 +1,9 @@
+<div class="character-sheet">
+  <h2>Character Sheet</h2>
+  <div class="character-info">
+    <input [(ngModel)]="character.name" placeholder="Character Name">
+    <input [(ngModel)]="character.class" placeholder="Character Class">
+    <input type="number" [(ngModel)]="character.level" placeholder="Level">
+  </div>
+  <app-stat-block [stats]="character.stats" (statChange)="onStatChange($event.stat, $event.value)"></app-stat-block>
+</div>

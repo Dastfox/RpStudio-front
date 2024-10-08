@@ -1,0 +1,21 @@
+.stat-block {
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.stat-item label {
+  font-weight: bold;
+}
+
+.stat-item input {
+  width: 50px;
+  text-align: center;
+}
