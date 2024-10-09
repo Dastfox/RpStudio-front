@@ -1,9 +1,19 @@
-<div class="character-sheet">
-  <h2>Character Sheet</h2>
-  <div class="character-info">
-    <input [(ngModel)]="character.name" placeholder="Character Name">
-    <input [(ngModel)]="character.class" placeholder="Character Class">
-    <input type="number" [(ngModel)]="character.level" placeholder="Level">
-  </div>
-  <app-stat-block [stats]="character.stats" (statChange)="onStatChange($event.stat, $event.value)"></app-stat-block>
-</div>
+    <div class="character-sheet">
+      <h2>Character Sheet</h2>
+      <div class="character-info">
+        <div>
+          <label for="name">Name:</label>
+          <input id="name" [(ngModel)]="character.name"/>
+        </div>
+        <div>
+          <label for="class">Class:</label>
+          <input id="class" [(ngModel)]="character.class"/>
+        </div>
+        <div>
+          <label for="level">Level:</label>
+          <input id="level" type="number" [(ngModel)]="character.level"/>
+        </div>
+      </div>
+      <app-stat-blocks [stats]="character.stats" (statChange)="onCharacterStatChange($event)"></app-stat-blocks>
+<!--      <app-stat-blocks [stats]="character.stats" (statChange)="onStatChange($event)"></app-stat-block>-->
+    </div>

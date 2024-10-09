@@ -1,14 +1,14 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { CharacterSheetComponent } from './character-sheet/character-sheet.component';
-import { StatBlockComponent } from './stat-block/stat-block.component';
+import {Component} from '@angular/core';
+import {CharacterSheetComponent} from './character-sheet/character-sheet.component';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, CharacterSheetComponent, StatBlockComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+  styleUrls: ['./app.component.scss'],
+  standalone: true,
+  imports: [
+    CharacterSheetComponent
+  ]
 })
 export class AppComponent {
   title = 'RpStudio';

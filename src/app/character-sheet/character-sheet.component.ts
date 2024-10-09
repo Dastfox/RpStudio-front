@@ -1,15 +1,19 @@
-import {Component} from '@angular/core';
-import {Character} from '../models/character.model';
-import {StatBlockComponent} from '../stat-block/stat-block.component';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {Character, CharacterStats} from '../models/character.model';
+import {StatBlocksComponent} from '../stat-blocks/stat-blocks.component';
 import {FormsModule} from "@angular/forms";
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-character-sheet',
   templateUrl: './character-sheet.component.html',
   standalone: true,
-  styleUrls: ['./character-sheet.component.scss'],
-  imports: [StatBlockComponent, FormsModule]
-
+  imports: [
+    FormsModule,
+    CommonModule,
+    StatBlocksComponent
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CharacterSheetComponent {
   character: Character = {
@@ -26,7 +30,11 @@ export class CharacterSheetComponent {
     }
   };
 
-  onStatChange(stat: string, value: number): void {
-    this.character.stats[stat as keyof typeof this.character.stats] = value;
+  constructor(private _cdr: ChangeDetectorRef) {}
+
+  onCharacterStatChange(event: { key: keyof CharacterStats, value: number }) {
+    this.character.stats[event.key] = event.value;
+    console.log(`${event.key} changed to ${event.value}`);
   }
 }
+

@@ -1,0 +1,13 @@
+<div class="stat-block">
+  <label [attr.for]="statKey">{{ statKey | titlecase }}</label>
+  <input
+    [id]="statKey"
+    type="number"
+    [(ngModel)]="value"
+    (ngModelChange)="onValueChange($event)"
+  >
+  @if (errorMessage) {
+    <span class="error">{{ errorMessage }}</span>
+  }
+</div>
+
