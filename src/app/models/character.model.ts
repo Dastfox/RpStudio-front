@@ -19,6 +19,7 @@ export const DEFAULT_STATS: CharacterStats = {
 export interface Character {
   name: string;
   class: string;
+  background: string;
   level: number;
   stats: CharacterStats;
 }
@@ -26,6 +27,7 @@ export interface Character {
 export const DEFAULT_CHARACTER: Character = {
   name: "New Character",
   class: "Fighter",
+  background: "Criminal",
   level: 1,
   stats: DEFAULT_STATS
 };

@@ -1,20 +1,86 @@
+// Variables
+$parchment-color: #f4e6cc;
+$ink-color: #2c1b0f;
+$accent-color: #8b4513;
+$border-color: #d2b48c;
+
 .character-sheet {
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
-  padding: 20px;
-  background-color: #989898;
-  border-radius: 5px;
+  padding: 30px;
+  background-color: $parchment-color;
+  color: $ink-color;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  font-family: 'Luminari', 'Papyrus', fantasy;
+  background-repeat: repeat;
+
+  h2 {
+    text-align: center;
+    font-size: 3em;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: $accent-color;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    font-family: 'Dragon Hunter', 'Luminari', fantasy;
+  }
+
+  .character-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+
+    div {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 1.2em;
+      color: $accent-color;
+    }
+
+    input {
+      padding: 10px;
+      border: 2px solid $border-color;
+      border-radius: 5px;
+      background-color: rgba(255, 255, 255, 0.5);
+      color: $ink-color;
+      font-size: 1.1em;
+      font-family: 'Luminari', 'Papyrus', fantasy;
+      transition: all 0.3s ease;
+
+      &:focus {
+        outline: none;
+        border-color: $accent-color;
+        box-shadow: 0 0 5px rgba(139, 69, 19, 0.5);
+      }
+    }
+  }
+
+  app-stat-blocks {
+    display: block;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid $border-color;
+  }
 }
 
-.character-info {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
+// Responsive adjustments
+@media (max-width: 480px) {
+  .character-sheet {
+    padding: 20px;
 
-.character-info input {
-  width: 30%;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
+    h2 {
+      font-size: 2.5em;
+    }
+
+    .character-info {
+      grid-template-columns: 1fr;
+    }
+  }
 }

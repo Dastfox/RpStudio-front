@@ -10,6 +10,7 @@ type StatKey = keyof CharacterStats;
   standalone: true,
   imports: [FormsModule, NgIf, CommonModule],
   templateUrl: './stat-block.component.html',
+  styleUrls: ['./stat-block.component.scss']
   // template: `
   //   <div class="stat-block">
   //     <label [attr.for]="statKey">{{ statKey | titlecase }}</label>
@@ -24,20 +25,6 @@ type StatKey = keyof CharacterStats;
   //     }
   //   </div>
   // `,
-  styles: [`
-    .stat-block {
-      margin-bottom: 15px;
-    }
-    label {
-      display: block;
-      margin-bottom: 5px;
-      text-transform: capitalize;
-    }
-    .error {
-      color: red;
-      font-size: 0.8em;
-    }
-  `]
 })
 export class StatBlockComponent {
   @Input() statKey!: StatKey;

@@ -3,17 +3,50 @@
       <div class="character-info">
         <div>
           <label for="name">Name:</label>
-          <input id="name" [(ngModel)]="character.name"/>
+          <input id="name" [(ngModel)]="character.name" (ngModelChange)="onFieldChange()">
         </div>
         <div>
           <label for="class">Class:</label>
-          <input id="class" [(ngModel)]="character.class"/>
+          <select id="class" [(ngModel)]="character.class" (ngModelChange)="onClassChange()">
+            <option value="">Select a class</option>
+            <option *ngFor="let class of classes" [value]="class.name">{{class.name}}</option>
+          </select>
         </div>
         <div>
           <label for="level">Level:</label>
-          <input id="level" type="number" [(ngModel)]="character.level"/>
+          <input id="level" type="number" [(ngModel)]="character.level" (ngModelChange)="onFieldChange()">
+        </div>
+        <div>
+          <label for="background">Background:</label>
+          <select id="background" [(ngModel)]="character.background" (ngModelChange)="onBackgroundChange()">
+            <option value="">Select a background</option>
+            <option *ngFor="let bg of backgrounds" [value]="bg.name">{{bg.name}}</option>
+          </select>
         </div>
       </div>
-      <app-stat-blocks [stats]="character.stats" (statChange)="onCharacterStatChange($event)"></app-stat-blocks>
-<!--      <app-stat-blocks [stats]="character.stats" (statChange)="onStatChange($event)"></app-stat-block>-->
+
+      <div *ngIf="selectedClass">
+        <h3>Class Details</h3>
+        <p>{{selectedClass.description}}</p>
+        <p>Hit Die: {{selectedClass.hitDie}}</p>
+        <p>Primary Ability: {{selectedClass.primaryAbility}}</p>
+      </div>
+
+      <div *ngIf="selectedBackground">
+        <h3>Background Details</h3>
+        <p>{{selectedBackground.description}}</p>
+        <p>Feat: {{selectedBackground.feats[0]}}</p>
+        <p>Skill Proficiencies: {{selectedBackground.skillProficiencies.join(', ')}}</p>
+        <p>Ability Score Improvements:</p>
+        <ul>
+          <li *ngFor="let ability of selectedBackground.abilityScoreImprovements">{{ability}}</li>
+        </ul>
+        <button (click)="applyAbilityScores('balanced')">Apply +1 to three abilities</button>
+        <button (click)="applyAbilityScores('focused')">Apply +2 to one, +1 to another</button>
+      </div>
+
+      <app-stat-blocks
+        [stats]="character.stats"
+        (statChange)="onCharacterStatChange($event)"
+      ></app-stat-blocks>
     </div>
