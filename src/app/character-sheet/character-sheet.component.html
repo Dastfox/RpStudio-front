@@ -9,7 +9,7 @@
           <label for="class">Class:</label>
           <select id="class" [(ngModel)]="character.class" (ngModelChange)="onClassChange()">
             <option value="">Select a class</option>
-            <option *ngFor="let class of classes" [value]="class.name">{{class.name}}</option>
+            <option *ngFor="let _class of classes" [value]="_class.name">{{ _class.name }}</option>
           </select>
         </div>
         <div>
@@ -20,33 +20,29 @@
           <label for="background">Background:</label>
           <select id="background" [(ngModel)]="character.background" (ngModelChange)="onBackgroundChange()">
             <option value="">Select a background</option>
-            <option *ngFor="let bg of backgrounds" [value]="bg.name">{{bg.name}}</option>
+            <option *ngFor="let bg of backgrounds" [value]="bg.name">{{ bg.name }}</option>
           </select>
         </div>
       </div>
 
       <div *ngIf="selectedClass">
         <h3>Class Details</h3>
-        <p>{{selectedClass.description}}</p>
-        <p>Hit Die: {{selectedClass.hitDie}}</p>
-        <p>Primary Ability: {{selectedClass.primaryAbility}}</p>
+        <p>{{ selectedClass.description }}</p>
+        <p>Hit Die: {{ selectedClass.hitDie }}</p>
+        <p>Primary Ability: {{ selectedClass.primaryAbility }}</p>
       </div>
 
       <div *ngIf="selectedBackground">
         <h3>Background Details</h3>
-        <p>{{selectedBackground.description}}</p>
-        <p>Feat: {{selectedBackground.feats[0]}}</p>
-        <p>Skill Proficiencies: {{selectedBackground.skillProficiencies.join(', ')}}</p>
-        <p>Ability Score Improvements:</p>
-        <ul>
-          <li *ngFor="let ability of selectedBackground.abilityScoreImprovements">{{ability}}</li>
-        </ul>
-        <button (click)="applyAbilityScores('balanced')">Apply +1 to three abilities</button>
-        <button (click)="applyAbilityScores('focused')">Apply +2 to one, +1 to another</button>
+        <p>{{ selectedBackground.description }}</p>
+        <p>Feat: {{ selectedBackground.feats[0] }}</p>
+        <p>Skill Proficiencies: {{ selectedBackground.skillProficiencies.join(', ') }}</p>
       </div>
 
       <app-stat-blocks
         [stats]="character.stats"
+        [bumpableStats]="Array.from(bumpableStats)"
         (statChange)="onCharacterStatChange($event)"
+        #statBlocks
       ></app-stat-blocks>
     </div>

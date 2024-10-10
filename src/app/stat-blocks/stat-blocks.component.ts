@@ -42,6 +42,7 @@ export class StatBlocksComponent {
           !bumpedByTwo &&
           (bumpedByOneCount === 0 || (bumpedByOneCount === 1 && currentBump !== 'one')) &&
           currentBump !== 'two';
+        console.log('Stat:', key, 'Bumped by one:', canBeBumpedByOne, 'Bumped by two:', canBeBumpedByTwo);
 
         return {
           key,
@@ -55,7 +56,6 @@ export class StatBlocksComponent {
   }
 
   onStatChange(event: { key: StatKey, value: number, is_bumped: BumpType }): void {
-
     this.bumpedStats[event.key] = event.is_bumped;
     console.log('Stat change event:', event, 'Bumped stats:', this.bumpedStats);
     this.statChange.emit(event);
@@ -67,7 +67,6 @@ export class StatBlocksComponent {
     for (const key in this.stats) {
       if (this.stats.hasOwnProperty(key)) {
         const statKey = key as StatKey;
-        this.stats[statKey] = Math.max(this.stats[statKey] - 2, 10); // Ensure the stat doesn't go below 10
         this.statChange.emit({key: statKey, value: this.stats[statKey], is_bumped: null});
       }
     }

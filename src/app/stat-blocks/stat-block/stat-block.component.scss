@@ -8,6 +8,7 @@ $error-color: #8b0000;
 $focused-improvement-color: #4a90e2;
 $checkbox-color: #4a90e2;
 $shadow-color: rgba(0, 0, 0, 0.2);
+$modifier-bg-color: rgba(139, 69, 19, 0.1);
 
 @mixin fantasy-text {
   font-family: 'Luminari', 'Papyrus', fantasy;
@@ -78,6 +79,22 @@ $shadow-color: rgba(0, 0, 0, 0.2);
       }
     }
 
+    .dnd-modifier {
+      @include fantasy-text;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: $stat-text-color;
+      background-color: $modifier-bg-color;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 10px 0;
+      box-shadow: 0 2px 4px $shadow-color;
+    }
+
     .stat-value-input {
       width: 70px;
       text-align: center;
@@ -128,6 +145,7 @@ $shadow-color: rgba(0, 0, 0, 0.2);
 
       &:checked {
         background-color: $checkbox-color;
+
         &::after {
           content: '✓';
           display: flex;
@@ -202,6 +220,12 @@ $shadow-color: rgba(0, 0, 0, 0.2);
         width: 25px;
         height: 25px;
       }
+    }
+
+    .dnd-modifier {
+      font-size: 1em;
+      width: 35px;
+      height: 35px;
     }
 
     .bump-checkbox {

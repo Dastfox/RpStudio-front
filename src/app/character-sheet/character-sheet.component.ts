@@ -9,56 +9,7 @@ type StatKey = keyof CharacterStats;
 
 @Component({
   selector: 'app-character-sheet',
-  template: `
-    <div class="character-sheet">
-      <h2>Character Sheet</h2>
-      <div class="character-info">
-        <div>
-          <label for="name">Name:</label>
-          <input id="name" [(ngModel)]="character.name" (ngModelChange)="onFieldChange()">
-        </div>
-        <div>
-          <label for="class">Class:</label>
-          <select id="class" [(ngModel)]="character.class" (ngModelChange)="onClassChange()">
-            <option value="">Select a class</option>
-            <option *ngFor="let _class of classes" [value]="_class.name">{{ _class.name }}</option>
-          </select>
-        </div>
-        <div>
-          <label for="level">Level:</label>
-          <input id="level" type="number" [(ngModel)]="character.level" (ngModelChange)="onFieldChange()">
-        </div>
-        <div>
-          <label for="background">Background:</label>
-          <select id="background" [(ngModel)]="character.background" (ngModelChange)="onBackgroundChange()">
-            <option value="">Select a background</option>
-            <option *ngFor="let bg of backgrounds" [value]="bg.name">{{ bg.name }}</option>
-          </select>
-        </div>
-      </div>
-
-      <div *ngIf="selectedClass">
-        <h3>Class Details</h3>
-        <p>{{ selectedClass.description }}</p>
-        <p>Hit Die: {{ selectedClass.hitDie }}</p>
-        <p>Primary Ability: {{ selectedClass.primaryAbility }}</p>
-      </div>
-
-      <div *ngIf="selectedBackground">
-        <h3>Background Details</h3>
-        <p>{{ selectedBackground.description }}</p>
-        <p>Feat: {{ selectedBackground.feats[0] }}</p>
-        <p>Skill Proficiencies: {{ selectedBackground.skillProficiencies.join(', ') }}</p>
-      </div>
-
-      <app-stat-blocks
-        [stats]="character.stats"
-        [bumpableStats]="Array.from(bumpableStats)"
-        (statChange)="onCharacterStatChange($event)"
-        #statBlocks
-      ></app-stat-blocks>
-    </div>
-  `,
+  templateUrl: "./character-sheet.component.html",
   styleUrls: ['./character-sheet.component.scss'],
   standalone: true,
   imports: [

@@ -102,4 +102,16 @@ export class StatBlockComponent {
   private getBumpValue(): number {
     return (this.isBumpedTwo ? 2 : 0) + (this.isBumpedOne ? 1 : 0);
   }
+
+  // New method to calculate D&D modifier
+  public getDndModifier(): number {
+    const baseValue = this.get_value_without_bump();
+    return Math.floor((baseValue - 10) / 2);
+  }
+
+  // New method to get the formatted D&D modifier string
+  public getDndModifierString(): string {
+    const modifier = this.getDndModifier();
+    return modifier >= 0 ? `+${modifier}` : `${modifier}`;
+  }
 }
