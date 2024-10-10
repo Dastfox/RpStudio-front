@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, numberAttribute, Output} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {CommonModule, NgIf} from '@angular/common';
-import {CharacterStats} from '../../models/character.model';
+import {DnDCharacterStats} from '../../models/character.model';
 
-type StatKey = keyof CharacterStats;
+type StatKey = keyof DnDCharacterStats;
 type BumpType = 'one' | 'two' | null;
 
 @Component({
@@ -70,11 +70,11 @@ export class StatBlockComponent {
   }
 
   toggleBump(type: BumpType) {
-    if (type === 'one') {
-      this.isBumpedOne = !this.isBumpedOne;
-    } else if (type === 'two') {
-      this.isBumpedTwo = !this.isBumpedTwo;
-    }
+    // if (type === 'one') {
+    //   this.isBumpedOne = !this.isBumpedOne;
+    // } else if (type === 'two') {
+    //   this.isBumpedTwo = !this.isBumpedTwo;
+    // }
     this.updateValueWithBumps();
     this.emitValueChange(this.value_with_bumps);
   }
@@ -105,11 +105,11 @@ export class StatBlockComponent {
   }
 
   canIncrement(): boolean {
-    return this.max === undefined || this.value_with_bumps < this.max;
+    return this.max === undefined || this.value_without_bumps < this.max;
   }
 
   canDecrement(): boolean {
-    return this.min === undefined || this.value_with_bumps > this.min;
+    return this.min === undefined || this.value_without_bumps > this.min;
   }
 
   private getBumpValue(): number {
@@ -117,7 +117,7 @@ export class StatBlockComponent {
   }
 
   public getDndModifier(): number {
-    return Math.floor((this.value_without_bumps - 10) / 2);
+    return Math.floor((this.value_with_bumps - 10) / 2);
   }
 
   public getDndModifierString(): string {

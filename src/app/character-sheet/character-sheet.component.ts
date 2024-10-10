@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
-import {Character, CharacterStats} from '../models/character.model';
+import {DnDCharacter, DnDCharacterStats} from '../models/character.model';
 import {StatBlocksComponent} from '../stat-blocks/stat-blocks.component';
 import {FormsModule} from "@angular/forms";
 import {CommonModule} from '@angular/common';
-import {DnD5eDataService, DnDClass, DnDBackground} from '../services/dnd.service';
+import {DnD5eDataService, DnDClass, DnDBackground} from '../services/DnD/dnd.service';
 
-type StatKey = keyof CharacterStats;
+type StatKey = keyof DnDCharacterStats;
 
 @Component({
   selector: 'app-character-sheet',
@@ -20,7 +20,7 @@ type StatKey = keyof CharacterStats;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CharacterSheetComponent implements OnInit {
-  character: Character = {
+  character: DnDCharacter = {
     name: '',
     class: '',
     level: 1,

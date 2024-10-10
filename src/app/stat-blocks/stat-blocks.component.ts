@@ -1,9 +1,9 @@
 import {Component, Input, Output, EventEmitter, ViewChildren, QueryList} from '@angular/core';
 import {NgFor} from '@angular/common';
 import {StatBlockComponent} from './stat-block/stat-block.component';
-import {CharacterStats} from '../models/character.model';
+import {DnDCharacterStats} from '../models/character.model';
 
-type StatKey = keyof CharacterStats;
+type StatKey = keyof DnDCharacterStats;
 type BumpType = 'one' | 'two' | null;
 
 @Component({
@@ -14,7 +14,7 @@ type BumpType = 'one' | 'two' | null;
   styleUrls: ['./stat-blocks.component.scss']
 })
 export class StatBlocksComponent {
-  @Input() stats!: CharacterStats;
+  @Input() stats!: DnDCharacterStats;
   @Input() bumpableStats: StatKey[] = [];
 
   @Output() statChange = new EventEmitter<{ key: StatKey, value: number, is_bumped: BumpType }>();

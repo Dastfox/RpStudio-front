@@ -1,4 +1,4 @@
-export interface CharacterStats {
+export interface DnDCharacterStats {
   strength: number;
   dexterity: number;
   constitution: number;
@@ -7,7 +7,14 @@ export interface CharacterStats {
   charisma: number;
 }
 
-export const DEFAULT_STATS: CharacterStats = {
+export interface PointBuyConfig {
+  totalPoints: number;
+  minScore: number;
+  maxScore: number;
+  pointCosts: { [key: number]: number };
+}
+
+export const DEFAULT_STATS: DnDCharacterStats = {
   strength: 10,
   dexterity: 10,
   constitution: 10,
@@ -16,15 +23,15 @@ export const DEFAULT_STATS: CharacterStats = {
   charisma: 10
 };
 
-export interface Character {
+export interface DnDCharacter {
   name: string;
   class: string;
   background: string;
   level: number;
-  stats: CharacterStats;
+  stats: DnDCharacterStats;
 }
 
-export const DEFAULT_CHARACTER: Character = {
+export const DEFAULT_CHARACTER: DnDCharacter = {
   name: "New Character",
   class: "Fighter",
   background: "Criminal",
