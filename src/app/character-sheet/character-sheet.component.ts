@@ -1,9 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Character, CharacterStats } from '../models/character.model';
-import { StatBlocksComponent } from '../stat-blocks/stat-blocks.component';
-import { FormsModule } from "@angular/forms";
-import { CommonModule } from '@angular/common';
-import { DnD5eDataService, DnDClass, DnDBackground } from '../services/dnd.service';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import {Character, CharacterStats} from '../models/character.model';
+import {StatBlocksComponent} from '../stat-blocks/stat-blocks.component';
+import {FormsModule} from "@angular/forms";
+import {CommonModule} from '@angular/common';
+import {DnD5eDataService, DnDClass, DnDBackground} from '../services/dnd.service';
+
+type StatKey = keyof CharacterStats;
 
 @Component({
   selector: 'app-character-sheet',
@@ -19,7 +21,7 @@ import { DnD5eDataService, DnDClass, DnDBackground } from '../services/dnd.servi
           <label for="class">Class:</label>
           <select id="class" [(ngModel)]="character.class" (ngModelChange)="onClassChange()">
             <option value="">Select a class</option>
-            <option *ngFor="let _class of classes" [value]="_class.name">{{_class.name}}</option>
+            <option *ngFor="let _class of classes" [value]="_class.name">{{ _class.name }}</option>
           </select>
         </div>
         <div>
@@ -30,34 +32,30 @@ import { DnD5eDataService, DnDClass, DnDBackground } from '../services/dnd.servi
           <label for="background">Background:</label>
           <select id="background" [(ngModel)]="character.background" (ngModelChange)="onBackgroundChange()">
             <option value="">Select a background</option>
-            <option *ngFor="let bg of backgrounds" [value]="bg.name">{{bg.name}}</option>
+            <option *ngFor="let bg of backgrounds" [value]="bg.name">{{ bg.name }}</option>
           </select>
         </div>
       </div>
 
       <div *ngIf="selectedClass">
         <h3>Class Details</h3>
-        <p>{{selectedClass.description}}</p>
-        <p>Hit Die: {{selectedClass.hitDie}}</p>
-        <p>Primary Ability: {{selectedClass.primaryAbility}}</p>
+        <p>{{ selectedClass.description }}</p>
+        <p>Hit Die: {{ selectedClass.hitDie }}</p>
+        <p>Primary Ability: {{ selectedClass.primaryAbility }}</p>
       </div>
 
       <div *ngIf="selectedBackground">
         <h3>Background Details</h3>
-        <p>{{selectedBackground.description}}</p>
-        <p>Feat: {{selectedBackground.feats[0]}}</p>
-        <p>Skill Proficiencies: {{selectedBackground.skillProficiencies.join(', ')}}</p>
-        <p>Ability Score Improvements:</p>
-        <ul>
-          <li *ngFor="let ability of selectedBackground.abilityScoreImprovements">{{ability}}</li>
-        </ul>
-        <button (click)="applyAbilityScores('balanced')">Apply +1 to three abilities</button>
-        <button (click)="applyAbilityScores('focused')">Apply +2 to one, +1 to another</button>
+        <p>{{ selectedBackground.description }}</p>
+        <p>Feat: {{ selectedBackground.feats[0] }}</p>
+        <p>Skill Proficiencies: {{ selectedBackground.skillProficiencies.join(', ') }}</p>
       </div>
 
       <app-stat-blocks
         [stats]="character.stats"
+        [bumpableStats]="Array.from(bumpableStats)"
         (statChange)="onCharacterStatChange($event)"
+        #statBlocks
       ></app-stat-blocks>
     </div>
   `,
@@ -86,15 +84,21 @@ export class CharacterSheetComponent implements OnInit {
     }
   };
 
+   @ViewChild('statBlocks') statBlocksComponent!: StatBlocksComponent;
+
   classes: DnDClass[] = [];
   backgrounds: DnDBackground[] = [];
   selectedClass?: DnDClass;
   selectedBackground?: DnDBackground;
+  bumpableStats: Set<StatKey> = new Set();
+
+  Array = Array;
 
   constructor(
     private dndDataService: DnD5eDataService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.dndDataService.getClasses().subscribe(classes => {
@@ -127,34 +131,36 @@ export class CharacterSheetComponent implements OnInit {
     if (this.character.background) {
       this.dndDataService.getBackgroundByName(this.character.background).subscribe(backgroundData => {
         this.selectedBackground = backgroundData;
+        this.bumpableStats.clear();
+        if (backgroundData && backgroundData.abilityScoreImprovements) {
+          backgroundData.abilityScoreImprovements.forEach(stat => {
+            this.bumpableStats.add(stat.toLowerCase() as StatKey);
+          });
+        }
+        this.resetBumpedStats();
         this.cdr.markForCheck();
       });
     } else {
       this.selectedBackground = undefined;
+      this.bumpableStats.clear();
+      this.resetBumpedStats();
       this.cdr.markForCheck();
     }
   }
 
-  onCharacterStatChange(event: { key: keyof CharacterStats; value: number }) {
+  resetBumpedStats() {
+    if (this.statBlocksComponent) {
+      console.log('Resetting bumped stats');
+      this.statBlocksComponent.resetBumpedStats();
+    }
+  }
+
+
+  onCharacterStatChange(event: { key: StatKey; value: number }) {
     this.character.stats[event.key] = event.value;
     console.log(`${event.key} changed to ${event.value}`);
     this.cdr.markForCheck();
   }
 
-  applyAbilityScores(method: 'balanced' | 'focused') {
-    if (this.selectedBackground) {
-      const abilities = this.selectedBackground.abilityScoreImprovements;
-      if (method === 'balanced') {
-        abilities.forEach(ability => {
-          this.character.stats[ability.toLowerCase() as keyof CharacterStats] += 1;
-        });
-      } else {
-        // For 'focused', you'd typically open a dialog or use some UI to let the user choose.
-        // For this example, we'll just apply +2 to the first ability and +1 to the second.
-        this.character.stats[abilities[0].toLowerCase() as keyof CharacterStats] += 2;
-        this.character.stats[abilities[1].toLowerCase() as keyof CharacterStats] += 1;
-      }
-      this.cdr.markForCheck();
-    }
-  }
 }
+

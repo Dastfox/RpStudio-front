@@ -220,6 +220,13 @@ export class DnD5eDataService {
       feats: ['Lucky'],
       skillProficiencies: ['Sleight of Hand', 'Stealth'],
       abilityScoreImprovements: ['Dexterity', 'Constitution', 'Wisdom']
+    },
+    {
+      name: 'Custom',
+      description: 'You have a unique background',
+      feats: ['Choose one'],
+      skillProficiencies: ['Choose two'],
+      abilityScoreImprovements: ['Strength', 'Dexterity', 'Constitution', 'Intelligence', 'Wisdom', 'Charisma']
     }
   ];
 

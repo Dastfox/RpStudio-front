@@ -1,13 +1,27 @@
-<div class="stat-block">
-  <label [attr.for]="statKey">{{ statKey | titlecase }}</label>
-  <input
-    [id]="statKey"
-    type="number"
-    [(ngModel)]="value"
-    (ngModelChange)="onValueChange($event)"
-  >
-  @if (errorMessage) {
-    <span class="error">{{ errorMessage }}</span>
-  }
-</div>
+<div class="stat-block" [class.focused-improvement]="isFocusedImprovement">
+  <div class="stat-name">
+    {{ statKey | titlecase }}
+  </div>
 
+  <div class="stat-value-container">
+    <button class="arrow-button" (click)="incrementValue()" [disabled]="!isEditable || !canIncrement()" *ngIf="canIncrement()">&#9650;</button>
+    <input type="number" [ngModel]="value" (ngModelChange)="onValueChange($event)" [disabled]="!isEditable" class="stat-value-input">
+    <button class="arrow-button" (click)="decrementValue()" [disabled]="!isEditable || !canDecrement()" *ngIf="canDecrement()">&#9660;</button>
+  </div>
+
+  <div class="input-group">
+    <div class="bump-checkbox" *ngIf="canBeBumpedByOne || isBumpedOne">
+      <input type="checkbox" [checked]="isBumpedOne" (change)="toggleBump('one')" [disabled]="!canBeBumpedByOne && !isBumpedOne">
+      <label>+1</label>
+    </div>
+
+    <div class="bump-checkbox" *ngIf="canBeBumpedByTwo || isBumpedTwo">
+      <input type="checkbox" [checked]="isBumpedTwo" (change)="toggleBump('two')" [disabled]="!canBeBumpedByTwo && !isBumpedTwo">
+      <label>+2</label>
+    </div>
+  </div>
+
+  <div class="error" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+</div>

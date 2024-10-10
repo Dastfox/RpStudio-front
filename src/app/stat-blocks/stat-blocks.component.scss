@@ -41,6 +41,12 @@ $highlight-color: #8b0000;
     }
   }
 
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
   .stat {
     background-color: $stat-bg-color;
     border: 2px solid $stat-border-color;

@@ -1,14 +1,17 @@
-    <div class="stat-blocks">
-      <h3>Ability Scores</h3>
-      <div class="stats-grid">
-        @for (entry of statEntries; track entry.key) {
-          <div class="stat">
-            <app-stat-block
-              [statKey]="entry.key"
-              [value]="entry.value"
-              (valueChanged)="onStatChange($event)">
-            </app-stat-block>
-          </div>
-        }
-      </div>
-    </div>
+<div class="stat-blocks">
+  <h3>Ability Scores</h3>
+  <div class="stats-grid">
+    @for (entry of statEntries; track entry.key) {
+      <app-stat-block
+        [statKey]="entry.key"
+        [value]="entry.value"
+        [canBeBumpedByOne]="entry.canBeBumpedByOne"
+        [canBeBumpedByTwo]="entry.canBeBumpedByTwo"
+        [isFocusedImprovement]="entry.isFocusedImprovement"
+        [min]=8
+        [max]=20
+        (valueChanged)="onStatChange($event)"
+      ></app-stat-block>
+    }
+  </div>
+</div>
