@@ -15,23 +15,40 @@ type BumpType = 'one' | 'two' | null;
 })
 export class StatBlockComponent {
   @Input() statKey!: StatKey;
-  @Input() value!: number;
+  @Input({transform: numberAttribute}) min?: number;
+  @Input({transform: numberAttribute}) max?: number;
   @Input() isEditable: boolean = true;
   @Input() canBeBumpedByOne: boolean = false;
   @Input() canBeBumpedByTwo: boolean = false;
   @Input() isFocusedImprovement: boolean = false;
-  @Input({transform: numberAttribute}) min?: number;
-  @Input({transform: numberAttribute}) max?: number;
   @Output() valueChanged = new EventEmitter<{ key: StatKey, value: number, is_bumped: BumpType }>();
 
-
+  private _value_without_bumps!: number;
+  private _value_with_bumps!: number;
 
   errorMessage: string = '';
   isBumpedOne: boolean = false;
   isBumpedTwo: boolean = false;
 
-  onValueChange(newValue: number) {
+  @Input()
+  set value(val: number) {
+    this._value_without_bumps = val;
+    this.updateValueWithBumps();
+  }
 
+  get value_without_bumps(): number {
+    return this._value_without_bumps;
+  }
+
+  get value_with_bumps(): number {
+    return this._value_with_bumps;
+  }
+
+  private updateValueWithBumps(): void {
+    this._value_with_bumps = this._value_without_bumps + this.getBumpValue();
+  }
+
+  onValueChange(newValue: number) {
     if (isNaN(newValue)) {
       this.errorMessage = 'Please enter a valid number';
     } else {
@@ -40,89 +57,78 @@ export class StatBlockComponent {
     }
   }
 
-
   incrementValue() {
     if (this.canIncrement()) {
-      this.emitValueChange(this.value + 1);
+      this.emitValueChange(this.value_with_bumps + 1);
     }
   }
 
   decrementValue() {
     if (this.canDecrement()) {
-      this.emitValueChange(this.value - 1);
+      this.emitValueChange(this.value_with_bumps - 1);
     }
   }
 
   toggleBump(type: BumpType) {
-    let valueChange = 0;
-
-    console.log('Toggling: Bump 1:', this.isBumpedOne, 'Bump 2:', this.isBumpedTwo);
     if (type === 'one') {
-      valueChange = this.isBumpedOne ? 1 : -1;
+      this.isBumpedOne = !this.isBumpedOne;
     } else if (type === 'two') {
-      valueChange = this.isBumpedTwo ? 2 : -2;
+      this.isBumpedTwo = !this.isBumpedTwo;
     }
-    console.log('Toggling2: Bump 1:', this.isBumpedOne, 'Bump 2:', this.isBumpedTwo);
-    this.emitValueChange(this.value + valueChange);
+    this.updateValueWithBumps();
+    this.emitValueChange(this.value_with_bumps);
   }
 
   private emitValueChange(newValue: number) {
     let bumpType: BumpType = null;
-    console.log('New Value:', newValue, 'Min:', this.min, 'Max:', this.max, this.isBumpedTwo, this.isBumpedOne);
     if (this.isBumpedTwo) {
       bumpType = 'two';
     } else if (this.isBumpedOne) {
       bumpType = 'one';
     }
-    this.valueChanged.emit({key: this.statKey, value: newValue, is_bumped: bumpType});
+    this._value_without_bumps = newValue - this.getBumpValue();
+    this.updateValueWithBumps();
+    this.valueChanged.emit({key: this.statKey, value: this._value_without_bumps, is_bumped: bumpType});
   }
 
   private clampValue(value: number): number {
-    console.log('Clamping value:', value, 'Min:', this.min, 'Max:', this.max, "bumpValue", this.getBumpValue());
-    const bumpValue = this.getBumpValue();
+    const minWithBump = this.min !== undefined ? this.min - this.getBumpValue() : undefined;
+    const maxWithBump = this.max !== undefined ? this.max + this.getBumpValue() : undefined;
 
-    if (this.min !== undefined && value < this.min - bumpValue) {
-      return this.min - bumpValue;
+    if (minWithBump !== undefined && value < minWithBump) {
+      return minWithBump;
     }
-    if (this.max !== undefined && value > this.max + bumpValue) {
-      return this.max + bumpValue;
+    if (maxWithBump !== undefined && value > maxWithBump) {
+      return maxWithBump;
     }
     return value;
   }
 
   canIncrement(): boolean {
-    const bumpValue = this.getBumpValue();
-    return this.max === undefined || this.value < this.max + bumpValue;
+    return this.max === undefined || this.value_with_bumps < this.max;
   }
 
   canDecrement(): boolean {
-    const bumpValue = this.getBumpValue();
-    return this.min === undefined || this.value > this.min + bumpValue;
-  }
-
-  public get_value_without_bump(): number {
-    return this.value - this.getBumpValue();
+    return this.min === undefined || this.value_with_bumps > this.min;
   }
 
   private getBumpValue(): number {
     return (this.isBumpedTwo ? 2 : 0) + (this.isBumpedOne ? 1 : 0);
   }
 
-  // New method to calculate D&D modifier
   public getDndModifier(): number {
-    const baseValue = this.get_value_without_bump();
-    return Math.floor((baseValue - 10) / 2);
+    return Math.floor((this.value_without_bumps - 10) / 2);
   }
 
-  // New method to get the formatted D&D modifier string
   public getDndModifierString(): string {
     const modifier = this.getDndModifier();
     return modifier >= 0 ? `+${modifier}` : `${modifier}`;
   }
 
   public resetBumps(): void {
-    console.log('Resetting bumps');
     this.isBumpedOne = false;
-    this.isBumpedTwo = false
+    this.isBumpedTwo = false;
+    this.updateValueWithBumps();
+    this.emitValueChange(this.value_with_bumps);
   }
 }
