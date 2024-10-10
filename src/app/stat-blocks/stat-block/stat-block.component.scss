@@ -26,6 +26,8 @@ $modifier-bg-color: rgba(139, 69, 19, 0.1);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  width: 200px;
+  height: 280px;
 
   &::before {
     content: '';
@@ -45,6 +47,22 @@ $modifier-bg-color: rgba(139, 69, 19, 0.1);
     margin-bottom: 12px;
     text-transform: uppercase;
     text-shadow: 1px 1px 2px $shadow-color;
+  }
+
+  .dnd-modifier {
+    @include fantasy-text;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: $stat-text-color;
+    background-color: $modifier-bg-color;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+    box-shadow: 0 2px 4px $shadow-color;
   }
 
   .stat-value-container {
@@ -79,22 +97,6 @@ $modifier-bg-color: rgba(139, 69, 19, 0.1);
       }
     }
 
-    .dnd-modifier {
-      @include fantasy-text;
-      font-size: 1.2em;
-      font-weight: bold;
-      color: $stat-text-color;
-      background-color: $modifier-bg-color;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 10px 0;
-      box-shadow: 0 2px 4px $shadow-color;
-    }
-
     .stat-value-input {
       width: 70px;
       text-align: center;
@@ -127,6 +129,10 @@ $modifier-bg-color: rgba(139, 69, 19, 0.1);
     display: flex;
     justify-content: center;
     gap: 15px;
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
   }
 
   .bump-checkbox {
@@ -184,6 +190,10 @@ $modifier-bg-color: rgba(139, 69, 19, 0.1);
     word-wrap: break-word;
     font-style: italic;
     @include fantasy-text;
+    position: absolute;
+    bottom: 5px;
+    left: 10px;
+    right: 10px;
   }
 
   &.focused-improvement {
@@ -203,6 +213,8 @@ $modifier-bg-color: rgba(139, 69, 19, 0.1);
 @media (max-width: 480px) {
   .stat-block {
     padding: 15px;
+    width: 180px;
+    height: 260px;
 
     .stat-name {
       font-size: 1.2em;

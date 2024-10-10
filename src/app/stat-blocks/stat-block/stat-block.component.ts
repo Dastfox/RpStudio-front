@@ -1,7 +1,7 @@
-import {Component, Input, Output, EventEmitter, numberAttribute} from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { CommonModule, NgIf } from '@angular/common';
-import { CharacterStats } from '../../models/character.model';
+import {Component, EventEmitter, Input, numberAttribute, Output} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {CommonModule, NgIf} from '@angular/common';
+import {CharacterStats} from '../../models/character.model';
 
 type StatKey = keyof CharacterStats;
 type BumpType = 'one' | 'two' | null;
@@ -24,19 +24,22 @@ export class StatBlockComponent {
   @Input({transform: numberAttribute}) max?: number;
   @Output() valueChanged = new EventEmitter<{ key: StatKey, value: number, is_bumped: BumpType }>();
 
+
+
   errorMessage: string = '';
   isBumpedOne: boolean = false;
   isBumpedTwo: boolean = false;
 
   onValueChange(newValue: number) {
+
     if (isNaN(newValue)) {
       this.errorMessage = 'Please enter a valid number';
     } else {
       this.errorMessage = '';
-      console.log('New value:', newValue, 'Min:', this.min, 'Max:', this.max);
       this.emitValueChange(this.clampValue(newValue));
     }
   }
+
 
   incrementValue() {
     if (this.canIncrement()) {
@@ -52,30 +55,32 @@ export class StatBlockComponent {
 
   toggleBump(type: BumpType) {
     let valueChange = 0;
-    if (type === 'one') {
-      valueChange = this.isBumpedOne ? -1 : 1;
-      this.isBumpedOne = !this.isBumpedOne;
-    } else if (type === 'two') {
-      valueChange = this.isBumpedTwo ? -2 : 2;
-      this.isBumpedTwo = !this.isBumpedTwo;
-    }
+
     console.log('Toggling: Bump 1:', this.isBumpedOne, 'Bump 2:', this.isBumpedTwo);
+    if (type === 'one') {
+      valueChange = this.isBumpedOne ? 1 : -1;
+    } else if (type === 'two') {
+      valueChange = this.isBumpedTwo ? 2 : -2;
+    }
+    console.log('Toggling2: Bump 1:', this.isBumpedOne, 'Bump 2:', this.isBumpedTwo);
     this.emitValueChange(this.value + valueChange);
   }
 
   private emitValueChange(newValue: number) {
     let bumpType: BumpType = null;
+    console.log('New Value:', newValue, 'Min:', this.min, 'Max:', this.max, this.isBumpedTwo, this.isBumpedOne);
     if (this.isBumpedTwo) {
       bumpType = 'two';
     } else if (this.isBumpedOne) {
       bumpType = 'one';
     }
-    console.log('Final value:', newValue, 'Bump type:', bumpType);
     this.valueChanged.emit({key: this.statKey, value: newValue, is_bumped: bumpType});
   }
 
   private clampValue(value: number): number {
+    console.log('Clamping value:', value, 'Min:', this.min, 'Max:', this.max, "bumpValue", this.getBumpValue());
     const bumpValue = this.getBumpValue();
+
     if (this.min !== undefined && value < this.min - bumpValue) {
       return this.min - bumpValue;
     }
@@ -113,5 +118,11 @@ export class StatBlockComponent {
   public getDndModifierString(): string {
     const modifier = this.getDndModifier();
     return modifier >= 0 ? `+${modifier}` : `${modifier}`;
+  }
+
+  public resetBumps(): void {
+    console.log('Resetting bumps');
+    this.isBumpedOne = false;
+    this.isBumpedTwo = false
   }
 }

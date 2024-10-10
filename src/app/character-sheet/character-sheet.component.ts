@@ -112,6 +112,5 @@ export class CharacterSheetComponent implements OnInit {
     console.log(`${event.key} changed to ${event.value}`);
     this.cdr.markForCheck();
   }
-
 }
 

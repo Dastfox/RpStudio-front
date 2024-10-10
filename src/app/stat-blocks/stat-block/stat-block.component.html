@@ -3,7 +3,6 @@
     {{ statKey | titlecase }}
   </div>
   <div class="dnd-modifier">
-    <span *ngIf="getDndModifierString() !== '0'">Modifier:</span>
     {{ getDndModifierString() }}
   </div>
 
@@ -11,24 +10,24 @@
     <button class="arrow-button" (click)="incrementValue()" [disabled]="!canIncrement() || !isEditable">▲</button>
 
     <input type="number" class="stat-value-input" [ngModel]="get_value_without_bump()"
-           (ngModelChange)="onValueChange($event)" [disabled]="!isEditable">
+           (ngModelChange)="onValueChange($event)" [disabled]="true">
 
     <button class="arrow-button" (click)="decrementValue()" [disabled]="!canDecrement() || !isEditable">▼</button>
-  </div>
-
-  <div class="input-group">
+      </div>
+        <div class="input-group">
     <div class="bump-checkbox" *ngIf="canBeBumpedByOne || isBumpedOne">
       <input type="checkbox" [id]="statKey + '_bump_one'" [(ngModel)]="isBumpedOne" (change)="toggleBump('one')"
              [disabled]="!isEditable">
-      <label [for]="statKey + '_bump_one'">+1</label>
+      <label [for]="statKey + '_bump_one'">+1 </label>
     </div>
 
     <div class="bump-checkbox" *ngIf="canBeBumpedByTwo || isBumpedTwo">
       <input type="checkbox" [id]="statKey + '_bump_two'" [(ngModel)]="isBumpedTwo" (change)="toggleBump('two')"
              [disabled]="!isEditable">
-      <label [for]="statKey + '_bump_two'">+2</label>
+      <label [for]="statKey + '_bump_two'">+2 </label>
     </div>
   </div>
+
 
   <div class="error" *ngIf="errorMessage">
     {{ errorMessage }}

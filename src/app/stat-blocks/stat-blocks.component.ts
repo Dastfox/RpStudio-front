@@ -1,4 +1,4 @@
-import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {Component, Input, Output, EventEmitter, ViewChildren, QueryList} from '@angular/core';
 import {NgFor} from '@angular/common';
 import {StatBlockComponent} from './stat-block/stat-block.component';
 import {CharacterStats} from '../models/character.model';
@@ -15,10 +15,11 @@ type BumpType = 'one' | 'two' | null;
 })
 export class StatBlocksComponent {
   @Input() stats!: CharacterStats;
-  @Input() focusedImprovements: Set<StatKey> = new Set();
   @Input() bumpableStats: StatKey[] = [];
 
   @Output() statChange = new EventEmitter<{ key: StatKey, value: number, is_bumped: BumpType }>();
+
+  @ViewChildren(StatBlockComponent) statBlocks!: QueryList<StatBlockComponent>;
 
   private bumpedStats: { [key in StatKey]?: BumpType } = {};
 
@@ -42,14 +43,14 @@ export class StatBlocksComponent {
           !bumpedByTwo &&
           (bumpedByOneCount === 0 || (bumpedByOneCount === 1 && currentBump !== 'one')) &&
           currentBump !== 'two';
-        console.log('Stat:', key, 'Bumped by one:', canBeBumpedByOne, 'Bumped by two:', canBeBumpedByTwo);
+
 
         return {
           key,
           value,
           canBeBumpedByOne,
           canBeBumpedByTwo,
-          isFocusedImprovement: this.focusedImprovements.has(key)
+          isFocusedImprovement: this.bumpableStats.includes(key)
         };
       }
     );
@@ -63,6 +64,10 @@ export class StatBlocksComponent {
 
   resetBumpedStats(): void {
     this.bumpedStats = {};
+    // Reset bumps on each StatBlockComponent
+    this.statBlocks.forEach(statBlock => {
+      statBlock.resetBumps();
+    });
     // Reset the actual stat values
     for (const key in this.stats) {
       if (this.stats.hasOwnProperty(key)) {
