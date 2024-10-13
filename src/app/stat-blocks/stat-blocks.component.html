@@ -1,17 +1,20 @@
-<div class="stat-blocks">
-  <h3>Ability Scores</h3>
-  <div class="stats-grid">
-    @for (entry of statEntries; track entry.key) {
-      <app-stat-block
-        [statKey]="entry.key"
-        [value]="entry.value"
-        [canBeBumpedByOne]="entry.canBeBumpedByOne"
-        [canBeBumpedByTwo]="entry.canBeBumpedByTwo"
-        [isFocusedImprovement]="entry.isFocusedImprovement"
-        [min]=8
-        [max]=20
-        (valueChanged)="onStatChange($event)"
-      ></app-stat-block>
-    }
-  </div>
-</div>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Ability Scores</mat-card-title>
+    <mat-card-subtitle>{{ pointCount }} / {{ max_points }} points used</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="stats-grid">
+        @for (entry of statEntries; track entry.key) {
+          <app-stat-block
+            [statKey]="entry.key"
+            [stats]="stats"
+            [canBeBumpedByOne]="entry.canBeBumpedByOne"
+            [canBeBumpedByTwo]="entry.canBeBumpedByTwo"
+            [isFocusedImprovement]="entry.isFocusedImprovement"
+            (valueChanged)="onStatChange($event)"
+          ></app-stat-block>
+        }
+    </div>
+  </mat-card-content>
+</mat-card>

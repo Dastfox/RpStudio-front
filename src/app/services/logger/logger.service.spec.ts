@@ -1,14 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-// @ts-ignore
-import { DndService } from './dnd.service';
+import { LoggerService } from './logger.service';
 
-describe('DndService', () => {
-  let service: DndService;
+describe('LoggerService', () => {
+  let service: LoggerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(DndService);
+    service = TestBed.inject(LoggerService);
   });
 
   it('should be created', () => {

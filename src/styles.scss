@@ -1,10 +1,255 @@
+// styles.scss
+
+@use '@angular/material' as mat;
+//@use './m3-theme' as theme;
+
+// Include the common styles for Angular Material
+@include mat.core();
+
+//// Apply the light theme by default
+//@include mat.all-component-themes(theme.$light-theme);
+//
+//// Apply the dark theme when the `.dark-theme` class is present
+//.dark-theme {
+//  @include mat.all-component-colors(theme.$dark-theme);
+//}
+
 body {
-  font-family: Arial, sans-serif;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
   margin: 0;
+  padding: 0;
+  height: 100%;
+  //background-color: mat.get-theme-color(theme.$light-theme, background);
+  //color: mat.get-theme-color(theme.$light-theme, on-background);
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 20px;
-  background-color: #f4f4f4;
 }
 
 h1, h2, h3 {
-  color: #333;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: var(--mat-theme-primary-color);
+}
+
+h2 {
+  font-size: 2rem;
+  color: var(--mat-theme-primary-color);
+}
+
+h3 {
+  font-size: 1.5rem;
+  color: var(--mat-theme-primary-color);
+}
+
+// character-sheet.component.scss
+
+.character-sheet {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: var(--mat-theme-surface-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .mat-mdc-card-title {
+    font-size: 2.25rem;
+    margin-bottom: 24px;
+    color: var(--mat-theme-primary-color);
+  }
+
+  .character-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .mat-divider {
+    margin: 32px 0;
+  }
+
+  .mat-expansion-panel {
+    margin-bottom: 16px;
+    border-radius: 8px;
+  }
+
+  .mat-expansion-panel-header-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--mat-theme-primary-color);
+  }
+
+  ul {
+    padding-left: 24px;
+    margin-bottom: 16px;
+  }
+}
+
+.dark-theme .character-sheet {
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+}
+
+// stat-block.component.scss
+
+.stat-block {
+  width: 220px;
+  //height: 170px;
+  margin: 3px;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+  background-color: var(--mat-theme-surface-container-low-color);
+  color: var(--mat-theme-on-surface-color);
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    //  line above the card
+    border-top: 3px solid black;
+    transition: border-top 0.2s;
+  }
+
+  &.focused-improvement {
+    outline: 3px solid var(--mat-theme-tertiary-color);
+  }
+
+  .mat-mdc-card-header {
+    padding: 16px;
+  }
+
+  .mat-mdc-card-title {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--mat-theme-on-surface-variant-color);
+  }
+
+  .mat-mdc-card-subtitle {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--mat-theme-primary-color);
+  }
+
+
+  .stat-value-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 24px 0;
+
+    .mat-mdc-form-field {
+      width: 80px;
+      margin: 0 12px;
+    }
+
+    .mat-mdc-icon-button {
+      width: 48px; // Increased from 48px
+      height: 48px; // Increased from 48px
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .mat-icon {
+        font-size: 48px; // Increased from 24px
+        width: 48px; // Increased from 24px
+        height: 48px; // Increased from 24px
+        line-height: 48px; // Increased from 24px
+      }
+    }
+  }
+
+
+  .bump-checkboxes {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+  }
+
+  .mat-mdc-checkbox .mdc-checkbox__background {
+    border-color: var(--mat-theme-on-surface-variant-color);
+  }
+
+  .mat-mdc-error {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 0.875rem;
+  }
+}
+
+.dark-theme .stat-block {
+  &:hover {
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+  }
+}
+
+// stat-blocks.component.scss
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  margin-top: 32px;
+}
+
+.stats-card {
+  background-color: var(--mat-theme-surface-color);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .mat-mdc-card-title {
+    font-size: 1.75rem;
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: var(--mat-theme-primary-color);
+  }
+
+  .mat-mdc-card-subtitle {
+    font-size: 1.125rem;
+    margin-bottom: 3px;
+  }
+}
+
+.dark-theme .stats-card {
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+}
+
+// Responsive adjustments
+@media (max-width: 600px) {
+  .app-container {
+    padding: 16px;
+  }
+
+  .character-sheet {
+    padding: 16px;
+  }
+
+  .stat-block {
+    width: 100%;
+    margin: 16px 0;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
 }

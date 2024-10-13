@@ -1,0 +1,76 @@
+@use '@angular/material' as mat;
+
+// Define color palettes
+$primary-palette: (
+  50: #e8e1de,
+  100: #c6b5ae,
+  200: #a1857a,
+  300: #7c5446,
+  400: #5f3020,
+  500: #420c00,
+  600: #3c0b00,
+  700: #340900,
+  800: #2c0700,
+  900: #1e0400,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: white,
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+);
+
+$accent-palette: (
+  50: #fff8e1,
+  100: #ffecb3,
+  200: #ffe082,
+  300: #ffd54f,
+  400: #ffca28,
+  500: #ffc107,
+  600: #ffb300,
+  700: #ffa000,
+  800: #ff8f00,
+  900: #ff6f00,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: rgba(black, 0.87),
+    600: rgba(black, 0.87),
+    700: rgba(black, 0.87),
+    800: white,
+    900: white,
+  )
+);
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+$my-primary: mat.m2-define-palette($primary-palette);
+$my-accent: mat.m2-define-palette($accent-palette);
+
+// Define the light theme
+$light-theme: mat.m2-define-light-theme((
+ color: (
+   primary: $my-primary,
+   accent: $my-accent,
+ ),
+ typography: mat.m2-define-typography-config(),
+ density: 0,
+));
+
+// Define the dark theme
+$dark-theme: mat.m2-define-dark-theme((
+ color: (
+   primary: $my-primary,
+   accent: $my-accent,
+ ),
+ typography: mat.m2-define-typography-config(),
+ density: 0,
+));

@@ -1,134 +1,172 @@
-import {Component, EventEmitter, Input, numberAttribute, Output} from '@angular/core';
-import {FormsModule} from '@angular/forms';
-import {CommonModule, NgIf} from '@angular/common';
-import {DnDCharacterStats} from '../../models/character.model';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { DnDCharacterStats } from '../../models/character.model';
+import { DndPointBuyService } from '../../services/DnD/dnd-point-buy.service';
 
+// Type definitions
 type StatKey = keyof DnDCharacterStats;
 type BumpType = 'one' | 'two' | null;
 
 @Component({
   selector: 'app-stat-block',
   standalone: true,
-  imports: [FormsModule, NgIf, CommonModule],
+  imports: [
+    FormsModule,
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatCheckboxModule
+  ],
   templateUrl: './stat-block.component.html',
   styleUrls: ['./stat-block.component.scss']
 })
-export class StatBlockComponent {
+export class StatBlockComponent implements OnChanges {
+  // Input properties
   @Input() statKey!: StatKey;
-  @Input({transform: numberAttribute}) min?: number;
-  @Input({transform: numberAttribute}) max?: number;
   @Input() isEditable: boolean = true;
   @Input() canBeBumpedByOne: boolean = false;
   @Input() canBeBumpedByTwo: boolean = false;
   @Input() isFocusedImprovement: boolean = false;
+  @Input() stats!: DnDCharacterStats;
+
+  // Output property
   @Output() valueChanged = new EventEmitter<{ key: StatKey, value: number, is_bumped: BumpType }>();
 
-  private _value_without_bumps!: number;
-  private _value_with_bumps!: number;
+  // Private properties
+  private _valueWithoutBumps: number = 0;
+  private _valueWithBumps: number = 0;
+  private _maxStatValue: number = 20; // Default max value, can be adjusted if needed
 
+  // Public properties
   errorMessage: string = '';
-  isBumpedOne: boolean = false;
-  isBumpedTwo: boolean = false;
 
-  @Input()
-  set value(val: number) {
-    this._value_without_bumps = val;
-    this.updateValueWithBumps();
-  }
+  constructor(private dndPointBuyService: DndPointBuyService) {}
 
-  get value_without_bumps(): number {
-    return this._value_without_bumps;
-  }
-
-  get value_with_bumps(): number {
-    return this._value_with_bumps;
-  }
-
-  private updateValueWithBumps(): void {
-    this._value_with_bumps = this._value_without_bumps + this.getBumpValue();
-  }
-
-  onValueChange(newValue: number) {
-    if (isNaN(newValue)) {
-      this.errorMessage = 'Please enter a valid number';
-    } else {
-      this.errorMessage = '';
-      this.emitValueChange(this.clampValue(newValue));
+  // Lifecycle hook
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['stats'] && this.stats && this.statKey) {
+      this._valueWithoutBumps = this.stats[this.statKey];
+      this.updateValueWithBumps();
+      this.updateMaxStatValue();
     }
   }
 
+  // Private methods
+  private updateMaxStatValue(): void {
+    this._maxStatValue = this.dndPointBuyService.getMaxStatValue(this.statKey, this.stats);
+  }
+
+  private updateValueWithBumps(): void {
+    this._valueWithBumps = Math.min(
+      this.dndPointBuyService.getStatWithBackgroundBump(this.stats, this.statKey),
+      this._maxStatValue
+    );
+  }
+
+  private emitValueChange(newValue: number) {
+    this._valueWithoutBumps = Math.min(newValue, this._maxStatValue);
+    this.updateValueWithBumps();
+    const bumpType = this.dndPointBuyService.getBackgroundBump(this.statKey);
+    this.valueChanged.emit({key: this.statKey, value: this._valueWithoutBumps, is_bumped: bumpType || null});
+  }
+
+  // Getters and setters
+  get valueWithoutBumps(): number {
+    return this._valueWithoutBumps;
+  }
+
+  set valueWithoutBumps(newValue: number) {
+    this._valueWithoutBumps = Math.min(newValue, this._maxStatValue);
+    this.updateValueWithBumps();
+  }
+
+  get valueWithBumps(): number {
+    return this._valueWithBumps;
+  }
+
+  set valueWithBumps(newValue: number) {
+    const closestAllowedValue = this.dndPointBuyService.setStatToClosestAllowedValue(
+      this.stats, this.statKey, this._valueWithBumps, Math.min(newValue, this._maxStatValue)
+    );
+
+    if (closestAllowedValue !== this._valueWithBumps) {
+      this._valueWithBumps = closestAllowedValue;
+      this._valueWithoutBumps = this.dndPointBuyService.getStatWithoutBackgroundBump(this.stats, this.statKey);
+      this.emitValueChange(this._valueWithoutBumps);
+    }
+  }
+
+  get isBumpedOne(): boolean {
+    return this.dndPointBuyService.getBackgroundBump(this.statKey) === 'one';
+  }
+
+  set isBumpedOne(value: boolean) {
+    this.toggleBump(value ? 'one' : null);
+  }
+
+  get isBumpedTwo(): boolean {
+    return this.dndPointBuyService.getBackgroundBump(this.statKey) === 'two';
+  }
+
+  set isBumpedTwo(value: boolean) {
+    this.toggleBump(value ? 'two' : null);
+  }
+
+  get maxStatValue(): number {
+    return this._maxStatValue;
+  }
+
+  // Public methods
   incrementValue() {
     if (this.canIncrement()) {
-      this.emitValueChange(this.value_with_bumps + 1);
+      this.emitValueChange(Math.min(this.valueWithoutBumps + 1, this._maxStatValue));
     }
   }
 
   decrementValue() {
     if (this.canDecrement()) {
-      this.emitValueChange(this.value_with_bumps - 1);
+      this.emitValueChange(this.valueWithoutBumps - 1);
     }
   }
 
-  toggleBump(type: BumpType) {
-    // if (type === 'one') {
-    //   this.isBumpedOne = !this.isBumpedOne;
-    // } else if (type === 'two') {
-    //   this.isBumpedTwo = !this.isBumpedTwo;
-    // }
+  toggleBump(bumpType: BumpType) {
+    if (bumpType && this.dndPointBuyService.canApplyBackgroundBump(this.stats, this.statKey, bumpType)) {
+      this.dndPointBuyService.applyBackgroundBump(this.statKey, bumpType);
+    } else {
+      this.dndPointBuyService.removeBackgroundBump(this.statKey);
+    }
     this.updateValueWithBumps();
-    this.emitValueChange(this.value_with_bumps);
-  }
-
-  private emitValueChange(newValue: number) {
-    let bumpType: BumpType = null;
-    if (this.isBumpedTwo) {
-      bumpType = 'two';
-    } else if (this.isBumpedOne) {
-      bumpType = 'one';
-    }
-    this._value_without_bumps = newValue - this.getBumpValue();
-    this.updateValueWithBumps();
-    this.valueChanged.emit({key: this.statKey, value: this._value_without_bumps, is_bumped: bumpType});
-  }
-
-  private clampValue(value: number): number {
-    const minWithBump = this.min !== undefined ? this.min - this.getBumpValue() : undefined;
-    const maxWithBump = this.max !== undefined ? this.max + this.getBumpValue() : undefined;
-
-    if (minWithBump !== undefined && value < minWithBump) {
-      return minWithBump;
-    }
-    if (maxWithBump !== undefined && value > maxWithBump) {
-      return maxWithBump;
-    }
-    return value;
+    this.emitValueChange(this.valueWithoutBumps);
   }
 
   canIncrement(): boolean {
-    return this.max === undefined || this.value_without_bumps < this.max;
+    return this.stats && this.valueWithBumps < this._maxStatValue && this.dndPointBuyService.canIncreaseStat(this.stats, this.statKey);
   }
 
   canDecrement(): boolean {
-    return this.min === undefined || this.value_without_bumps > this.min;
+    return this.stats ? this.dndPointBuyService.canDecreaseStat(this.stats, this.statKey) : false;
   }
 
-  private getBumpValue(): number {
-    return (this.isBumpedTwo ? 2 : 0) + (this.isBumpedOne ? 1 : 0);
+  getDndModifier(): number {
+    return Math.floor((this.valueWithBumps - 10) / 2);
   }
 
-  public getDndModifier(): number {
-    return Math.floor((this.value_with_bumps - 10) / 2);
-  }
-
-  public getDndModifierString(): string {
+  getDndModifierString(): string {
     const modifier = this.getDndModifier();
     return modifier >= 0 ? `+${modifier}` : `${modifier}`;
   }
 
-  public resetBumps(): void {
-    this.isBumpedOne = false;
-    this.isBumpedTwo = false;
+  resetBumps(): void {
+    this.dndPointBuyService.removeBackgroundBump(this.statKey);
     this.updateValueWithBumps();
-    this.emitValueChange(this.value_with_bumps);
+    this.emitValueChange(this.valueWithoutBumps);
   }
 }

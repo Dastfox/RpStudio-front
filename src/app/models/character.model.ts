@@ -25,6 +25,7 @@ export const DEFAULT_STATS: DnDCharacterStats = {
 
 export interface DnDCharacter {
   name: string;
+  species: string;
   class: string;
   background: string;
   level: number;
@@ -34,6 +35,7 @@ export interface DnDCharacter {
 export const DEFAULT_CHARACTER: DnDCharacter = {
   name: "New Character",
   class: "Fighter",
+  species: "Human",
   background: "Criminal",
   level: 1,
   stats: DEFAULT_STATS

@@ -1,48 +1,102 @@
-    <div class="character-sheet">
-      <h2>Character Sheet</h2>
-      <div class="character-info">
-        <div>
-          <label for="name">Name:</label>
-          <input id="name" [(ngModel)]="character.name" (ngModelChange)="onFieldChange()">
-        </div>
-        <div>
-          <label for="class">Class:</label>
-          <select id="class" [(ngModel)]="character.class" (ngModelChange)="onClassChange()">
-            <option value="">Select a class</option>
-            <option *ngFor="let _class of classes" [value]="_class.name">{{ _class.name }}</option>
-          </select>
-        </div>
-        <div>
-          <label for="level">Level:</label>
-          <input id="level" type="number" [(ngModel)]="character.level" (ngModelChange)="onFieldChange()">
-        </div>
-        <div>
-          <label for="background">Background:</label>
-          <select id="background" [(ngModel)]="character.background" (ngModelChange)="onBackgroundChange()">
-            <option value="">Select a background</option>
-            <option *ngFor="let bg of backgrounds" [value]="bg.name">{{ bg.name }}</option>
-          </select>
-        </div>
-      </div>
+<mat-card class="character-sheet">
+  <mat-card-header>
+    <mat-card-title>Character Sheet</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="character-info">
+      <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput [(ngModel)]="character.name" (ngModelChange)="onFieldChange()">
+      </mat-form-field>
 
-      <div *ngIf="selectedClass">
-        <h3>Class Details</h3>
-        <p>{{ selectedClass.description }}</p>
-        <p>Hit Die: {{ selectedClass.hitDie }}</p>
-        <p>Primary Ability: {{ selectedClass.primaryAbility }}</p>
-      </div>
+      <mat-form-field>
+        <mat-label>Species</mat-label>
+        <mat-select [(ngModel)]="character.species" (ngModelChange)="onSpeciesChange()">
+          <mat-option *ngFor="let s of species" [value]="s.name">{{ s.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-      <div *ngIf="selectedBackground">
-        <h3>Background Details</h3>
-        <p>{{ selectedBackground.description }}</p>
-        <p>Feat: {{ selectedBackground.feats[0] }}</p>
-        <p>Skill Proficiencies: {{ selectedBackground.skillProficiencies.join(', ') }}</p>
-      </div>
+      <mat-form-field>
+        <mat-label>Class</mat-label>
+        <mat-select [(ngModel)]="character.class" (ngModelChange)="onClassChange()">
+          <mat-option *ngFor="let c of classes" [value]="c.name">{{ c.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-      <app-stat-blocks
-        [stats]="character.stats"
-        [bumpableStats]="Array.from(bumpableStats)"
-        (statChange)="onCharacterStatChange($event)"
-        #statBlocks
-      ></app-stat-blocks>
+      <mat-form-field>
+        <mat-label>Level</mat-label>
+        <input matInput type="number" [(ngModel)]="character.level" (ngModelChange)="onFieldChange()">
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Background</mat-label>
+        <mat-select [(ngModel)]="character.background" (ngModelChange)="onBackgroundChange()">
+          <mat-option *ngFor="let bg of backgrounds" [value]="bg.name">{{ bg.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
+
+    <mat-divider></mat-divider>
+
+
+    <mat-expansion-panel *ngIf="selectedSpecies">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Species Details: {{ selectedSpecies.name.toLocaleUpperCase() }}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <p>Description: {{ selectedSpecies.description }}</p>
+      <p>Size: {{ selectedSpecies.size.join(' or ') }}</p>
+      <p>Speed: {{ selectedSpecies.speed }} feet</p>
+      <h6>Traits:</h6>
+      <ul>
+        <li *ngFor="let trait of selectedSpecies.traits | keyvalue">{{ trait.key }}: {{ trait.value }}</li>
+      </ul>
+      <ng-container *ngIf="selectedSpecies.specialAbilities">
+        <h6>Special Abilities:</h6>
+        <ul>
+          <li *ngFor="let ability of selectedSpecies.specialAbilities | keyvalue">{{ ability.key }}
+            : {{ ability.value }}
+          </li>
+        </ul>
+      </ng-container>
+      <ng-container *ngIf="selectedSpecies.spells">
+        <h6>Spells:</h6>
+        <ul>
+          <li *ngFor="let spellList of selectedSpecies.spells | keyvalue">{{ spellList.key }}
+            : {{ spellList.value.join(', ') }}
+          </li>
+        </ul>
+      </ng-container>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel *ngIf="selectedClass">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Class Details: {{ selectedClass.name.toLocaleUpperCase() }}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <p>{{ selectedClass.description }}</p>
+      <p>Hit Die: {{ selectedClass.hitDie }}</p>
+      <p>Primary Ability: {{ selectedClass.primaryAbility }}</p>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel *ngIf="selectedBackground">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Background Details: {{ selectedBackground.name.toLocaleUpperCase() }}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <p>{{ selectedBackground.description }}</p>
+      <p>Feat: {{ selectedBackground.feats[0] }}</p>
+      <p>Skill Proficiencies: {{ selectedBackground.skillProficiencies.join(', ') }}</p>
+    </mat-expansion-panel>
+
+    <app-stat-blocks
+      [stats]="character.stats"
+      [bumpableStats]="Array.from(bumpableStats)"
+      (statChange)="onCharacterStatChange($event)"
+      #statBlocks
+    ></app-stat-blocks>
+  </mat-card-content>
+</mat-card>

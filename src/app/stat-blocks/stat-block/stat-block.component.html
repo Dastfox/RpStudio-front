@@ -1,35 +1,29 @@
-<div class="stat-block" [class.focused-improvement]="isFocusedImprovement">
-  <div class="stat-name">
-    {{ statKey | titlecase }}
-  </div>
-  <div class="dnd-modifier">
-    {{ getDndModifierString() }}
-  </div>
-
-  <div class="stat-value-container">
-    <button class="arrow-button" (click)="incrementValue()" [disabled]="!canIncrement() || !isEditable">▲</button>
-
-    <input type="number" class="stat-value-input" [ngModel]="value_with_bumps"
-           (ngModelChange)="onValueChange($event)" [disabled]="true">
-
-    <button class="arrow-button" (click)="decrementValue()" [disabled]="!canDecrement() || !isEditable">▼</button>
-      </div>
-        <div class="input-group">
-    <div class="bump-checkbox" *ngIf="canBeBumpedByOne || isBumpedOne">
-      <input type="checkbox" [id]="statKey + '_bump_one'" [(ngModel)]="isBumpedOne" (change)="toggleBump('one')"
-             [disabled]="!isEditable">
-      <label [for]="statKey + '_bump_one'">+1 </label>
+<mat-card class="stat-block" [class.mat-elevation-z4]="true" [class.focused-improvement]="isFocusedImprovement">
+  <mat-card-header>
+    <mat-card-title>{{ statKey | titlecase }}</mat-card-title>
+    <mat-card-subtitle>{{ getDndModifierString() }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="stat-value-container">
+      <button mat-icon-button color="primary" (click)="decrementValue()" [disabled]="!canDecrement()">
+        <mat-icon>keyboard_arrow_left</mat-icon>
+      </button>
+      <mat-form-field appearance="outline">
+        <input matInput type="number" [(ngModel)]="valueWithBumps"
+               [disabled]="!isEditable" [max]="maxStatValue">
+      </mat-form-field>
+      <button mat-icon-button color="primary" (click)="incrementValue()" [disabled]="!canIncrement()">
+        <mat-icon>keyboard_arrow_right</mat-icon>
+      </button>
     </div>
-
-    <div class="bump-checkbox" *ngIf="canBeBumpedByTwo || isBumpedTwo">
-      <input type="checkbox" [id]="statKey + '_bump_two'" [(ngModel)]="isBumpedTwo" (change)="toggleBump('two')"
-             [disabled]="!isEditable">
-      <label [for]="statKey + '_bump_two'">+2 </label>
+    <div class="bump-checkboxes">
+      <mat-checkbox *ngIf="canBeBumpedByOne || isBumpedOne" [(ngModel)]="isBumpedOne"
+                    color="primary">+1
+      </mat-checkbox>
+      <mat-checkbox *ngIf="canBeBumpedByTwo || isBumpedTwo" [(ngModel)]="isBumpedTwo"
+                    color="primary">+2
+      </mat-checkbox>
     </div>
-  </div>
-
-
-  <div class="error" *ngIf="errorMessage">
-    {{ errorMessage }}
-  </div>
-</div>
+  </mat-card-content>
+  <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error>
+</mat-card>

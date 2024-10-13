@@ -1,254 +1,129 @@
-// Variables
-$stat-bg-color: rgba(244, 230, 204, 0.85);
-$stat-text-color: #2c1b0f;
-$input-bg-color: rgba(255, 255, 255, 0.7);
-$input-border-color: #8b4513;
-$highlight-color: #8b0000;
-$error-color: #8b0000;
-$focused-improvement-color: #4a90e2;
-$checkbox-color: #4a90e2;
-$shadow-color: rgba(0, 0, 0, 0.2);
-$modifier-bg-color: rgba(139, 69, 19, 0.1);
-
-@mixin fantasy-text {
-  font-family: 'Luminari', 'Papyrus', fantasy;
-  letter-spacing: 0.5px;
-}
-
-.stat-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  background-color: $stat-bg-color;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px $shadow-color;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  width: 200px;
-  height: 280px;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(to right, $input-border-color, $highlight-color);
-  }
-
-  .stat-name {
-    @include fantasy-text;
-    font-weight: bold;
-    color: $stat-text-color;
-    font-size: 1.4em;
-    margin-bottom: 12px;
-    text-transform: uppercase;
-    text-shadow: 1px 1px 2px $shadow-color;
-  }
-
-  .dnd-modifier {
-    @include fantasy-text;
-    font-size: 1.2em;
-    font-weight: bold;
-    color: $stat-text-color;
-    background-color: $modifier-bg-color;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 10px 0;
-    box-shadow: 0 2px 4px $shadow-color;
-  }
-
-  .stat-value-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-
-    .arrow-button {
-      background: none;
-      border: none;
-      font-size: 1.5em;
-      color: $input-border-color;
-      cursor: pointer;
-      transition: color 0.2s ease;
-      padding: 0;
-      line-height: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 30px;
-      height: 30px;
-
-      &:hover:not(:disabled) {
-        color: $highlight-color;
-      }
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    }
-
-    .stat-value-input {
-      width: 70px;
-      text-align: center;
-      background-color: $input-bg-color;
-      border: 2px solid $input-border-color;
-      color: $stat-text-color;
-      padding: 8px;
-      border-radius: 6px;
-      font-size: 1.3em;
-      @include fantasy-text;
-      transition: all 0.3s ease;
-
-      &:focus {
-        outline: none;
-        border-color: $highlight-color;
-        box-shadow: 0 0 5px rgba($highlight-color, 0.5);
-      }
-
-      &::-webkit-inner-spin-button,
-      &::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-      }
-
-      -moz-appearance: textfield;
-    }
-  }
-
-  .input-group {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    position: absolute;
-    bottom: 20px;
-    left: 0;
-    right: 0;
-  }
-
-  .bump-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-
-    input[type="checkbox"] {
-      appearance: none;
-      width: 22px;
-      height: 22px;
-      border: 2px solid $checkbox-color;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-
-      &:checked {
-        background-color: $checkbox-color;
-
-        &::after {
-          content: '✓';
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          color: white;
-          font-size: 16px;
-          font-weight: bold;
-        }
-      }
-
-      &:hover:not(:disabled) {
-        box-shadow: 0 0 5px rgba($checkbox-color, 0.5);
-      }
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    }
-
-    label {
-      @include fantasy-text;
-      font-size: 1.1em;
-      color: $stat-text-color;
-      cursor: pointer;
-    }
-  }
-
-  .error {
-    color: $error-color;
-    font-size: 0.9em;
-    margin-top: 8px;
-    text-align: center;
-    max-width: 180px;
-    word-wrap: break-word;
-    font-style: italic;
-    @include fantasy-text;
-    position: absolute;
-    bottom: 5px;
-    left: 10px;
-    right: 10px;
-  }
-
-  &.focused-improvement {
-    box-shadow: 0 0 15px rgba($focused-improvement-color, 0.5);
-
-    &::before {
-      background: $focused-improvement-color;
-    }
-
-    .stat-value-input {
-      border-color: $focused-improvement-color;
-    }
-  }
-}
-
-// Media query for smaller screens
-@media (max-width: 480px) {
-  .stat-block {
-    padding: 15px;
-    width: 180px;
-    height: 260px;
-
-    .stat-name {
-      font-size: 1.2em;
-    }
-
-    .stat-value-container {
-      .stat-value-input {
-        width: 60px;
-        padding: 6px;
-        font-size: 1.1em;
-      }
-
-      .arrow-button {
-        font-size: 1.3em;
-        width: 25px;
-        height: 25px;
-      }
-    }
-
-    .dnd-modifier {
-      font-size: 1em;
-      width: 35px;
-      height: 35px;
-    }
-
-    .bump-checkbox {
-      input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
-      }
-
-      label {
-        font-size: 1em;
-      }
-    }
-  }
-}
+//@use '@angular/material' as mat;
+//@use 'sass:map';
+//
+//// Import your theme file
+////@use '../../../m3-theme' as theme;
+//
+//// Mixin to apply theme colors
+//@mixin color($theme) {
+//  $color-config: mat.get-theme-color($theme, surface);
+//  $primary-palette: map.get($color-config, 'primary');
+//  $tertiary-palette: map.get($color-config, 'tertiary');
+//  $is-dark: map.get($color-config, 'is-dark');
+//
+//  $background: if($is-dark, #1c1b1f, #fffbff);
+//  $on-background: if($is-dark, #e6e1e5, #1c1b1f);
+//
+//  .stat-block {
+//    background-color: mat.m2-get-color-from-palette($primary-palette, 'surface-container-low');
+//    color: mat.m2-get-color-from-palette($primary-palette, 'on-surface');
+//
+//    &.focused-improvement {
+//      outline: 2px solid mat.m2-get-color-from-palette($tertiary-palette, 'primary');
+//    }
+//
+//    .mat-mdc-card-title {
+//      color: mat.m2-get-color-from-palette($primary-palette, 'on-surface-variant');
+//    }
+//
+//    .mat-mdc-card-subtitle {
+//      color: mat.m2-get-color-from-palette($primary-palette, 'primary');
+//    }
+//
+//    .mat-mdc-form-field {
+//      background-color: mat.m2-get-color-from-palette($primary-palette, 'surface-container-highest');
+//    }
+//
+//    .mat-mdc-checkbox .mdc-checkbox__background {
+//      border-color: mat.m2-get-color-from-palette($primary-palette, 'on-surface-variant');
+//    }
+//  }
+//}
+//
+////// Apply the theme colors
+////@include color(theme.$light-theme);
+////
+////// Apply dark theme colors when the .dark-theme class is present on a parent element
+////.dark-theme {
+////  @include color(theme.$dark-theme);
+////}
+//
+//.stat-block {
+//  width: 200px;
+//  margin: 16px;
+//  border-radius: 16px;
+//  overflow: hidden;
+//
+//  .mat-mdc-card-header {
+//    justify-content: center;
+//    text-align: center;
+//    padding-bottom: 0;
+//  }
+//
+//  .mat-mdc-card-title {
+//    font-size: 1.4em;
+//    margin-bottom: 8px;
+//  }
+//
+//  .mat-mdc-card-subtitle {
+//    font-size: 1.2em;
+//    font-weight: bold;
+//  }
+//
+//  .stat-value-container {
+//    display: flex;
+//    justify-content: center;
+//    align-items: center;
+//    margin: 16px 0;
+//
+//    .mat-mdc-form-field {
+//      width: 70px;
+//      margin: 0 8px;
+//    }
+//
+//    .mat-mdc-icon-button {
+//      width: 40px;
+//      height: 40px;
+//      line-height: 40px;
+//    }
+//  }
+//
+//  .bump-checkboxes {
+//    display: flex;
+//    justify-content: center;
+//    gap: 16px;
+//    margin-top: 16px;
+//  }
+//
+//  .mat-mdc-error {
+//    text-align: center;
+//    margin-top: 8px;
+//  }
+//}
+//
+//// Media query for smaller screens
+//@media (max-width: 480px) {
+//  .stat-block {
+//    width: 180px;
+//
+//    .mat-mdc-card-title {
+//      font-size: 1.2em;
+//    }
+//
+//    .mat-mdc-card-subtitle {
+//      font-size: 1em;
+//    }
+//
+//    .stat-value-container {
+//      .mat-mdc-form-field {
+//        width: 60px;
+//      }
+//
+//      .mat-mdc-icon-button {
+//        width: 36px;
+//        height: 36px;
+//        line-height: 36px;
+//      }
+//    }
+//  }
+//}

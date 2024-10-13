@@ -1,9 +1,15 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {DnDCharacter, DnDCharacterStats} from '../models/character.model';
 import {StatBlocksComponent} from '../stat-blocks/stat-blocks.component';
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CommonModule} from '@angular/common';
-import {DnD5eDataService, DnDClass, DnDBackground} from '../services/DnD/dnd.service';
+import {DnD5eDataService, DnDBackground, DnDClass, DnDSpecies} from '../services/DnD/dnd-data.service';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+import {MatCardModule} from '@angular/material/card';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 type StatKey = keyof DnDCharacterStats;
 
@@ -14,14 +20,22 @@ type StatKey = keyof DnDCharacterStats;
   standalone: true,
   imports: [
     FormsModule,
+    ReactiveFormsModule,
     CommonModule,
     StatBlocksComponent,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatCardModule,
+    MatDividerModule,
+    MatExpansionModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CharacterSheetComponent implements OnInit {
   character: DnDCharacter = {
     name: '',
+    species: '',
     class: '',
     level: 1,
     background: '',
@@ -35,10 +49,12 @@ export class CharacterSheetComponent implements OnInit {
     }
   };
 
-   @ViewChild('statBlocks') statBlocksComponent!: StatBlocksComponent;
+  @ViewChild('statBlocks') statBlocksComponent!: StatBlocksComponent;
 
+  species: DnDSpecies[] = [];
   classes: DnDClass[] = [];
   backgrounds: DnDBackground[] = [];
+  selectedSpecies?: DnDSpecies;
   selectedClass?: DnDClass;
   selectedBackground?: DnDBackground;
   bumpableStats: Set<StatKey> = new Set();
@@ -52,6 +68,10 @@ export class CharacterSheetComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.dndDataService.getSpecies().subscribe(species => {
+      this.species = species;
+      this.cdr.markForCheck();
+    });
     this.dndDataService.getClasses().subscribe(classes => {
       this.classes = classes;
       this.cdr.markForCheck();
@@ -64,6 +84,16 @@ export class CharacterSheetComponent implements OnInit {
 
   onFieldChange() {
     this.cdr.markForCheck();
+  }
+
+  onSpeciesChange() {
+    if (this.character.species) {
+      this.selectedSpecies = this.species.find(s => s.name === this.character.species);
+      this.cdr.markForCheck();
+    } else {
+      this.selectedSpecies = undefined;
+      this.cdr.markForCheck();
+    }
   }
 
   onClassChange() {
@@ -112,5 +142,7 @@ export class CharacterSheetComponent implements OnInit {
     console.log(`${event.key} changed to ${event.value}`);
     this.cdr.markForCheck();
   }
+
+  protected readonly length = length;
 }
 

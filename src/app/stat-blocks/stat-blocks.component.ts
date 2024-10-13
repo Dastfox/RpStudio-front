@@ -1,7 +1,12 @@
-import {Component, Input, Output, EventEmitter, ViewChildren, QueryList} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren} from '@angular/core';
 import {NgFor} from '@angular/common';
 import {StatBlockComponent} from './stat-block/stat-block.component';
 import {DnDCharacterStats} from '../models/character.model';
+import {DndPointBuyService} from '../services/DnD/dnd-point-buy.service';
+import {MatCardModule} from '@angular/material/card';
+import {MatButtonModule} from '@angular/material/button';
+import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 type StatKey = keyof DnDCharacterStats;
 type BumpType = 'one' | 'two' | null;
@@ -9,11 +14,17 @@ type BumpType = 'one' | 'two' | null;
 @Component({
   selector: 'app-stat-blocks',
   standalone: true,
-  imports: [NgFor, StatBlockComponent],
+  imports: [
+    NgFor, StatBlockComponent,
+    MatCardModule,
+    MatButtonModule,
+    MatInputModule,
+    MatFormFieldModule
+  ],
   templateUrl: './stat-blocks.component.html',
   styleUrls: ['./stat-blocks.component.scss']
 })
-export class StatBlocksComponent {
+export class StatBlocksComponent implements OnInit {
   @Input() stats!: DnDCharacterStats;
   @Input() bumpableStats: StatKey[] = [];
 
@@ -21,12 +32,20 @@ export class StatBlocksComponent {
 
   @ViewChildren(StatBlockComponent) statBlocks!: QueryList<StatBlockComponent>;
 
-  private bumpedStats: { [key in StatKey]?: BumpType } = {};
-  private pointBuyCosts: { [key: number]: number } = {
-    8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9
-  };
-  private totalPointBuyBudget = 27;
-  private usedPoints = 0;
+  public max_points: number = 27;
+
+  constructor(private dndPointBuyService: DndPointBuyService) {
+  }
+
+  ngOnInit() {
+    if (!this.stats) {
+      this.stats = this.dndPointBuyService.initializeStats();
+    }
+  }
+
+  get pointCount(): number {
+    return this.dndPointBuyService.calculatePointsSpent(this.stats);
+  }
 
   get statEntries(): Array<{
     key: StatKey;
@@ -37,70 +56,59 @@ export class StatBlocksComponent {
     canBeIncreasedByPointBuy: boolean;
     canBeDecreasedByPointBuy: boolean;
   }> {
-    const bumpedByTwo = Object.values(this.bumpedStats).includes('two');
-    const bumpedByOneCount = Object.values(this.bumpedStats).filter(bump => bump === 'one').length;
+    if (!this.stats) return [];
 
     return (Object.entries(this.stats) as [StatKey, number][]).map(
       ([key, value]) => {
-        const currentBump = this.bumpedStats[key];
+        const currentBump = this.dndPointBuyService.getBackgroundBump(key);
         const canBeBumpedByOne = this.bumpableStats.includes(key) &&
-          ((!bumpedByTwo && bumpedByOneCount < 3) || (bumpedByTwo && bumpedByOneCount < 1)) &&
-          currentBump !== 'two';
+          this.dndPointBuyService.canApplyBackgroundBump(this.stats, key, 'one');
         const canBeBumpedByTwo = this.bumpableStats.includes(key) &&
-          !bumpedByTwo &&
-          (bumpedByOneCount === 0 || (bumpedByOneCount === 1 && currentBump !== 'one')) &&
-          currentBump !== 'two';
-
-        const baseStat = this.getBaseStatValue(key, value);
-        const canBeIncreasedByPointBuy = baseStat < 15 && this.usedPoints + this.getPointCost(baseStat + 1) - this.getPointCost(baseStat) <= this.totalPointBuyBudget;
-        const canBeDecreasedByPointBuy = baseStat > 8;
+          this.dndPointBuyService.canApplyBackgroundBump(this.stats, key, 'two');
 
         return {
           key,
-          value,
+          value: this.dndPointBuyService.getStatWithBackgroundBump(this.stats, key),
           canBeBumpedByOne,
           canBeBumpedByTwo,
           isFocusedImprovement: this.bumpableStats.includes(key),
-          canBeIncreasedByPointBuy,
-          canBeDecreasedByPointBuy
+          canBeIncreasedByPointBuy: this.dndPointBuyService.canIncreaseStat(this.stats, key),
+          canBeDecreasedByPointBuy: this.dndPointBuyService.canDecreaseStat(this.stats, key)
         };
       }
     );
   }
 
   onStatChange(event: { key: StatKey, value: number, is_bumped: BumpType }): void {
-    const oldBaseValue = this.getBaseStatValue(event.key, this.stats[event.key]);
-    const newBaseValue = this.getBaseStatValue(event.key, event.value);
+    const oldValue = this.stats[event.key];
+    const newValue = event.value;
 
-    this.usedPoints += this.getPointCost(newBaseValue) - this.getPointCost(oldBaseValue);
+    if (newValue > oldValue && this.dndPointBuyService.canIncreaseStat(this.stats, event.key)) {
+      this.stats = this.dndPointBuyService.increaseStat(this.stats, event.key);
+    } else if (newValue < oldValue && this.dndPointBuyService.canDecreaseStat(this.stats, event.key)) {
+      this.stats = this.dndPointBuyService.decreaseStat(this.stats, event.key);
+    }
 
-    this.bumpedStats[event.key] = event.is_bumped;
-    console.log('Stat change event:', event, 'Bumped stats:', this.bumpedStats, 'Used points:', this.usedPoints);
+    if (event.is_bumped) {
+      this.dndPointBuyService.applyBackgroundBump(event.key, event.is_bumped);
+    } else {
+      this.dndPointBuyService.removeBackgroundBump(event.key);
+    }
+
+    console.log('Stat change event:', event, 'Remaining points:', this.dndPointBuyService.getRemainingPoints(this.stats));
     this.statChange.emit(event);
   }
 
   resetBumpedStats(): void {
-    this.bumpedStats = {};
-    // this.usedPoints = 0;
-    // Reset bumps on each StatBlockComponent
+    for (const key of Object.keys(this.stats) as StatKey[]) {
+      this.dndPointBuyService.removeBackgroundBump(key);
+    }
     this.statBlocks.forEach(statBlock => {
       statBlock.resetBumps();
     });
-    // // Reset the actual stat values to 8
-    // for (const key in this.stats) {
-    //   if (this.stats.hasOwnProperty(key)) {
-    //     const statKey = key as StatKey;
-    //     this.statChange.emit({key: statKey, value: 10, is_bumped: null});
-    //   }
-    // }
   }
 
-  private getBaseStatValue(key: StatKey, value: number): number {
-    const bump = this.bumpedStats[key];
-    return value - (bump === 'one' ? 1 : bump === 'two' ? 2 : 0);
-  }
-
-  private getPointCost(value: number): number {
-    return this.pointBuyCosts[value] || 0;
+  getRemainingPoints(): number {
+    return this.dndPointBuyService.getRemainingPoints(this.stats);
   }
 }

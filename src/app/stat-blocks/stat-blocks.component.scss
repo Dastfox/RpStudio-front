@@ -1,94 +1,24 @@
-// Variables
-$stat-bg-color: rgba(244, 230, 204, 0.7);
-$stat-border-color: #8b4513;
-$stat-text-color: #2c1b0f;
-$highlight-color: #8b0000;
-
-// Mixin for responsive design
-@mixin respond-to($breakpoint) {
-  @if $breakpoint == "small" {
-    @media (max-width: 480px) {
-      @content;
-    }
-  }
-}
-
-.stat-blocks {
-  background-color: rgba(244, 230, 204, 0.5);
-  border-radius: 12px;
-  padding: 20px;
-  margin-top: 30px;
-  border: 2px solid $stat-border-color;
-
-  h3 {
-    color: $stat-text-color;
-    font-size: 2em;
-    margin-bottom: 20px;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-    font-family: 'Dragon Hunter', 'Luminari', fantasy;
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-
-    @include respond-to(small) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  .stat {
-    background-color: $stat-bg-color;
-    border: 2px solid $stat-border-color;
-    border-radius: 10px;
-    padding: 15px;
-    text-align: center;
-    transition: all 0.3s ease;
-
-    &:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    app-stat-block {
-      display: block;
-
-      .stat-key {
-        font-weight: bold;
-        color: $highlight-color;
-        font-size: 1.3em;
-        margin-bottom: 8px;
-        font-family: 'Luminari', 'Papyrus', fantasy;
-      }
-
-      .stat-value {
-        font-size: 1.6em;
-        color: $stat-text-color;
-        font-family: 'Luminari', 'Papyrus', fantasy;
-      }
-
-      input {
-        width: 60px;
-        text-align: center;
-        background-color: rgba(255, 255, 255, 0.5);
-        border: 2px solid $stat-border-color;
-        color: $stat-text-color;
-        padding: 8px;
-        border-radius: 6px;
-        font-size: 1.3em;
-        font-family: 'Luminari', 'Papyrus', fantasy;
-        transition: all 0.3s ease;
-
-        &:focus {
-          outline: none;
-          border-color: $highlight-color;
-          background-color: rgba(255, 255, 255, 0.7);
-        }
-      }
-    }
-  }
-}
+//@use '@angular/material' as mat;
+//
+//.stats-grid {
+//  display: grid;
+//  grid-template-columns: repeat(3, 1fr);
+//  gap: 16px;
+//
+//  @media (max-width: 600px) {
+//    grid-template-columns: repeat(2, 1fr);
+//  }
+//}
+//
+//mat-card {
+//  margin-top: 24px;
+//}
+//
+//mat-card-title {
+//  font-size: 24px;
+//  font-weight: bold;
+//}
+//
+//mat-card-subtitle {
+//  font-size: 16px;
+//}

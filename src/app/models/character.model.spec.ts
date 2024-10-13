@@ -1,7 +1,8 @@
-import { Character } from './character.model';
+import { DnDCharacter } from './character.model';
 
 describe('Character', () => {
   it('should create an instance', () => {
-    expect(new Character()).toBeTruthy();
+    // @ts-ignore
+    expect(new DnDCharacter()).toBeTruthy();
   });
 });
